@@ -46,7 +46,7 @@
                     }
 
                     try {
-                        callback.apply(subject, slice(arguments, 2));
+                        callback.action.apply(subject, slice(arguments, 2));
                     } catch(error) {
                         if (console && console.error) {
                             console.error(error);
