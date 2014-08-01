@@ -62,6 +62,6 @@
         define([], factory);
     } else {
         // Browser globals
-        global.sample_module = factory();
+        global.mem = factory();
     }
 }(this));
