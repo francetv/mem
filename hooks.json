@@ -1,0 +1,6 @@
+{
+  "pre-commit": {
+    "dont-commit-conflicts.hks": "0.0.0",
+    "esprima.hks": "0.0.0"
+  }
+}
