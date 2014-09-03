@@ -22,7 +22,13 @@ How to use it
 This library implements [UMD](http://bob.yexley.net/umd-javascript-that-runs-anywhere/), so you can import it with AMD or browser globals
 
 ```javascript
-require(['bower_components/mem/mem', ...], function (mem, ...) {
+require.config({
+    ...
+    paths: {
+        'mem': './bower_components/mem/mem.min.js'
+    }
+})
+require(['mem', ...], function (mem, ...) {
     ...
 });
 ```
@@ -30,6 +36,6 @@ require(['bower_components/mem/mem', ...], function (mem, ...) {
 or
 
 ```html
-<script type="text/javascript" src="./bower_components/mem/mem.js" />
+<script type="text/javascript" src="./bower_components/mem/mem.min.js" />
 ```
 

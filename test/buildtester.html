@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Tests runner AMD</title>
+<title>Build tester AMD</title>
 
 <script type="text/javascript">
-    var __BASE_URL__ = '../src';
-    var __COMPONENTS_PATH__ = '../bower_components/';
+    var __BASE_URL__ = '../';
+    var __COMPONENTS_PATH__ = 'bower_components/';
     var __TEST_SUITES__ = [
-        '../test/mem.test'
+        'test/mem.test'
     ];
+
+    var __LIB_PATHS__ = {
+        'mem': 'mem.min'
+    };
 </script>
 <script type="text/javascript" data-main="require-config.js" src="../bower_components/requirejs-bower/require.js"></script>
