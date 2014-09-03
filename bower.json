@@ -15,7 +15,7 @@
   "license": "MIT",
   "private": true,
   "homepage": "https://gitlab.ftven.net/player/mem",
-  "main": "mem.js",
+  "main": "mem.min.js",
   "devDependencies": {
     "requirejs-bower": "*",
     "mocha": "*",
@@ -26,6 +26,11 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "test"
+    "test",
+    "src",
+    "cov.html",
+    "Gruntfile.js",
+    "grunt-tasks",
+    "package.json"
   ]
 }

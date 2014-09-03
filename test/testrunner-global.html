@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<title>Tests runner Globals</title>
 <link rel="stylesheet" href="../bower_components/mocha/mocha.css"/>
 
 <div id="mocha"></div>
@@ -8,14 +9,28 @@
 <script type="text/javascript" src="../bower_components/chai/chai.js"></script>
 <script type="text/javascript" src="../bower_components/sinonjs/sinon.js"></script>
 <script type="text/javascript">
-    mocha.setup('bdd');
+    var setup = {
+        ui: "bdd"
+    };
+    var mocha_runner = window.mocha;
 
-    var mocha_runner = window.mochaPhantomJS ? mochaPhantomJS : mocha;
+    if (window.mochaPhantomJS) {
+        mocha_runner = window.mochaPhantomJS;
+
+        // In Phantomjs, specify grep value looking for #grep=pattern
+        var match = /#grep=(.*)/.exec(document.location.hash);
+        if (match) {
+            setup.grep = match[1];
+        }
+    }
+
+    window.mocha.setup(setup);
 </script>
 
-<script type="text/javascript" src="../mem.js"></script>
+<script type="text/javascript" src="../src/mem.js"></script>
 
 <script type="text/javascript" src="mem.test.js"></script>
 <script type="text/javascript">
+    console.log(document.title);
     mocha_runner.run();
 </script>

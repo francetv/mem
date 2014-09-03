@@ -123,9 +123,9 @@
 
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(['../mem', 'chai', 'sinon', 'mocha'], factory);
+        define(['mem', 'chai', 'sinon', 'mocha'], factory);
     } else {
         // Browser globals
-        factory(global.mem, global.chai, global.sinon, global.mocha);
+        factory(mem, chai, sinon, mocha);
     }
 }(this));
