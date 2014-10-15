@@ -6,52 +6,27 @@ module.exports = function(grunt) {
 
     clean: {
       cov: ['cov.html'],
-      dist: ["<%= pkg.name %>.min.js"/*, "<%= pkg.name %>.standalone.min.js"*/],
-      build_residues: ["<%= pkg.name %>.js"/*, "<%= pkg.name %>.standalone.js"*/]
+      dist: ["<%= pkg.name %>.min.js"],
+      build_residues: ["<%= pkg.name %>.js"]
     },
     test: {
       dev: ['test/**/testrunner*.html'],
       build: ['test/**/buildtester*.html']
     },
     requirejs: {
-/*
-      standalone: {
-        options: {
-          baseUrl: "./src",
-          name: "<%= pkg.name %>",
-          out: "<%= pkg.name %>.standalone.js",
-          paths: {
-            'other_module': 'path/to/other_module.min'
-          },
-          optimize: "none"
-        }
-      },
-*/
       dist: {
         options: {
           baseUrl: "./src",
           name: "<%= pkg.name %>",
           out: "<%= pkg.name %>.js",
-/*
-          paths: {
-            other_module: 'empty:'
-          }
-*/
           optimize: "none"
         }
       }
     },
     uglify: {
-/*
-      standalone: {
-        files: {
-          '<%= pkg.name %>.standalone.min.js': ['<%= pkg.name %>.standalone.js']
-        }
-      },
-*/
       dist: {
         files: {
-          '<%= pkg.name %>.min.js': ['src/<%= pkg.name %>.js']
+          '<%= pkg.name %>.min.js': ['<%= pkg.name %>.js']
         }
       }
     },
@@ -65,9 +40,6 @@ module.exports = function(grunt) {
           'package.json',
           'bower.json',
           '<%= pkg.name %>.min.js',
-/*
-          '<%= pkg.name %>.standalone.min.js',
-*/
           'cov.html'
         ],
         commitForceAdd: true,
@@ -91,10 +63,6 @@ module.exports = function(grunt) {
         ignore: [
           '<%= pkg.name %>*.js',
           '<%= pkg.name %>.min.js',
-/*
-          '<%= pkg.name %>.standalone.js',
-          '<%= pkg.name %>.standalone.min.js',
-*/
           'cov.html'
         ]
       }
