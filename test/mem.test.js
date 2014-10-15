@@ -41,6 +41,17 @@
                 mem.trigger(subject, 'event');
             });
 
+            it ('should trigger events only once on listeners that provide the once option', function() {
+                var subject = {};
+                var eventCallback = sinon.stub();
+
+                mem.on(subject, 'event', eventCallback, {once: true});
+
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                chai.assert.equal(eventCallback.callCount, 1);
+            });
+
             it ('should trigger events on all listeners execept "offed" ones', function(done) {
                 var subject = {};
 

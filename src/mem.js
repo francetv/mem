@@ -9,11 +9,12 @@
         return {
             _callbacks: [],
 
-            on: function on(subject, eventName, action) {
+            on: function on(subject, eventName, action, options) {
                 this._callbacks.push({
                     subject: subject,
                     eventName: eventName,
-                    action: action
+                    action: action,
+                    once: options && options.once
                 });
             },
 
@@ -52,6 +53,9 @@
                             console.error(error);
                         }
                     }
+                });
+                this._callbacks = this._callbacks.filter(function(callback) {
+                    return !callback.once;
                 });
             }
         };
