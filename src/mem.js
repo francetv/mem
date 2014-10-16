@@ -38,14 +38,15 @@
 
             trigger: function trigger(subject, eventName) {
                 var args = slice(arguments, 2);
-                
-                this._callbacks.forEach(function(callback) {
+
+                this._callbacks = this._callbacks.filter(function(callback) {
+                    var keep = !callback.once;
                     if (callback.subject !== subject) {
-                        return;
+                        return keep;
                     }
 
                     if (callback.eventName !== eventName) {
-                        return;
+                        return keep;
                     }
 
                     try {
@@ -55,9 +56,7 @@
                             console.error(error);
                         }
                     }
-                });
-                this._callbacks = this._callbacks.filter(function(callback) {
-                    return !callback.once;
+                    return keep;
                 });
             }
         };
