@@ -20,7 +20,7 @@
 
             off: function off(subject, eventName, action) {
                 this._callbacks = this._callbacks.filter(function(callback) {
-                    if (callback.subject !== subject) {
+                    if (subject && callback.subject !== subject) {
                         return true;
                     }
 
