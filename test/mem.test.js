@@ -19,6 +19,19 @@
                 mem.trigger(subject, 'event');
             });
 
+            it ('should transmit arguments to event handlers', function(done) {
+                var subject = {};
+                mem.on(subject, 'event', function(arg1, arg2, arg3, arg4) {
+                    chai.assert.equal(arg1, 'one argument');
+                    chai.assert.equal(arg2, 'another one');
+                    chai.assert.equal(arg3, 42);
+                    chai.assert.equal(arg4, undefined);
+                    done();
+                });
+
+                mem.trigger(subject, 'event', 'one argument', 'another one', 42);
+            });
+
             it ('should trigger events on all listeners', function(done) {
                 var subject = {};
 

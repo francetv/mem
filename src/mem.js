@@ -2,8 +2,8 @@
     "use strict";
 
     function factory() {
-        function slice(args) {
-            return Array.prototype.slice.call(args);
+        function slice(args, n) {
+            return Array.prototype.slice.call(args, n);
         }
 
         return {
@@ -37,6 +37,8 @@
             },
 
             trigger: function trigger(subject, eventName) {
+                var args = slice(arguments, 2);
+                
                 this._callbacks.forEach(function(callback) {
                     if (callback.subject !== subject) {
                         return;
@@ -47,7 +49,7 @@
                     }
 
                     try {
-                        callback.action.apply(subject, slice(arguments, 2));
+                        callback.action.apply(subject, args);
                     } catch(error) {
                         if (console && console.error) {
                             console.error(error);
