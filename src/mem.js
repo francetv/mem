@@ -2,24 +2,25 @@
     "use strict";
 
     function factory() {
-        function slice(args) {
-            return Array.prototype.slice.call(args);
+        function slice(args, n) {
+            return Array.prototype.slice.call(args, n);
         }
 
         return {
             _callbacks: [],
 
-            on: function on(subject, eventName, action) {
+            on: function on(subject, eventName, action, options) {
                 this._callbacks.push({
                     subject: subject,
                     eventName: eventName,
-                    action: action
+                    action: action,
+                    once: options && options.once
                 });
             },
 
             off: function off(subject, eventName, action) {
                 this._callbacks = this._callbacks.filter(function(callback) {
-                    if (callback.subject !== subject) {
+                    if (subject && callback.subject !== subject) {
                         return true;
                     }
 
@@ -36,22 +37,26 @@
             },
 
             trigger: function trigger(subject, eventName) {
-                this._callbacks.forEach(function(callback) {
+                var args = slice(arguments, 2);
+
+                this._callbacks = this._callbacks.filter(function(callback) {
+                    var keep = !callback.once;
                     if (callback.subject !== subject) {
-                        return;
+                        return keep;
                     }
 
                     if (callback.eventName !== eventName) {
-                        return;
+                        return keep;
                     }
 
                     try {
-                        callback.action.apply(subject, slice(arguments, 2));
+                        callback.action.apply(subject, args);
                     } catch(error) {
                         if (console && console.error) {
                             console.error(error);
                         }
                     }
+                    return keep;
                 });
             }
         };

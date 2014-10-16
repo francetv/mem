@@ -19,6 +19,19 @@
                 mem.trigger(subject, 'event');
             });
 
+            it ('should transmit arguments to event handlers', function(done) {
+                var subject = {};
+                mem.on(subject, 'event', function(arg1, arg2, arg3, arg4) {
+                    chai.assert.equal(arg1, 'one argument');
+                    chai.assert.equal(arg2, 'another one');
+                    chai.assert.equal(arg3, 42);
+                    chai.assert.equal(arg4, undefined);
+                    done();
+                });
+
+                mem.trigger(subject, 'event', 'one argument', 'another one', 42);
+            });
+
             it ('should trigger events on all listeners', function(done) {
                 var subject = {};
 
@@ -39,6 +52,32 @@
                 });
 
                 mem.trigger(subject, 'event');
+            });
+
+            it('should stop listening to events after a general off', function() {
+                var subject1 = {};
+                var subject2 = {};
+                var callback1 = sinon.stub();
+                var callback2 = sinon.stub();
+
+                mem.on(subject1, 'event1', callback1);
+                mem.on(subject2, 'event2', callback2);
+                mem.off();
+                mem.trigger(subject1, 'event1');
+                mem.trigger(subject2, 'event2');
+                chai.assert.equal(callback1.callCount, 0);
+                chai.assert.equal(callback2.callCount, 0);
+            });
+
+            it ('should trigger events only once on listeners that provide the once option', function() {
+                var subject = {};
+                var eventCallback = sinon.stub();
+
+                mem.on(subject, 'event', eventCallback, {once: true});
+
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                chai.assert.equal(eventCallback.callCount, 1);
             });
 
             it ('should trigger events on all listeners execept "offed" ones', function(done) {
