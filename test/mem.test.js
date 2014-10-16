@@ -54,6 +54,21 @@
                 mem.trigger(subject, 'event');
             });
 
+            it('should stop listening to events after a general off', function() {
+                var subject1 = {};
+                var subject2 = {};
+                var callback1 = sinon.stub();
+                var callback2 = sinon.stub();
+
+                mem.on(subject1, 'event1', callback1);
+                mem.on(subject2, 'event2', callback2);
+                mem.off();
+                mem.trigger(subject1, 'event1');
+                mem.trigger(subject2, 'event2');
+                chai.assert.equal(callback1.callCount, 0);
+                chai.assert.equal(callback2.callCount, 0);
+            });
+
             it ('should trigger events only once on listeners that provide the once option', function() {
                 var subject = {};
                 var eventCallback = sinon.stub();
