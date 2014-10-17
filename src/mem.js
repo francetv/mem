@@ -49,7 +49,14 @@
                     if (callback.eventName !== eventName) {
                         return true;
                     }
-                    callback.action.apply(subject, args);
+
+                    try {
+                        callback.action.apply(subject, args);
+                    } catch (error) {
+                        if (console && console.error) {
+                            console.error(error);
+                        }
+                    }
                     return keep;
                 });
             }
