@@ -1,4 +1,5 @@
-;(function(global) {
+;
+(function(global) {
     "use strict";
 
     function factory() {
@@ -42,16 +43,16 @@
                 this._callbacks = this._callbacks.filter(function(callback) {
                     var keep = !callback.once;
                     if (callback.subject !== subject) {
-                        return keep;
+                        return true;
                     }
 
                     if (callback.eventName !== eventName) {
-                        return keep;
+                        return true;
                     }
 
                     try {
                         callback.action.apply(subject, args);
-                    } catch(error) {
+                    } catch (error) {
                         if (console && console.error) {
                             console.error(error);
                         }
