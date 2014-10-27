@@ -156,6 +156,38 @@
 
                 mem.trigger(subject, 'event');
             });
+
+            it('should execute callback with subject as execution context', function(done) {
+                var subject = {};
+                var context = {
+                    method: function() {
+                        setTimeout(function() {
+                            chai.assert.equal(this, subject);
+                            done();
+                        }.bind(this), 0);
+                    }
+                };
+
+                mem.on(subject, 'event', context.method);
+
+                mem.trigger(subject, 'event');
+            });
+
+            it('should be possible to set callback\'s execution context with context option', function(done) {
+                var subject = {};
+                var context = {
+                    method: function() {
+                        setTimeout(function() {
+                            chai.assert.equal(this, context);
+                            done();
+                        }.bind(this), 0);
+                    }
+                };
+
+                mem.on(subject, 'event', context.method, { context: context });
+
+                mem.trigger(subject, 'event');
+            });
         });
 
     }
