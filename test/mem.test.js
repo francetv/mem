@@ -188,6 +188,23 @@
 
                 mem.trigger(subject, 'event');
             });
+
+            it('should be possible to force callback\'s arguments with args option', function(done) {
+                var subject = {};
+                var context = {
+                    method: function() {
+                        var args = [].slice.call(arguments);
+                        setTimeout(function() {
+                            chai.assert.deepEqual(args, ['argf1', 'argf2', 'arg1', 'arg2']);
+                            done();
+                        }.bind(this), 0);
+                    }
+                };
+
+                mem.on(subject, 'event', context.method, { args: ['argf1', 'argf2'] });
+
+                mem.trigger(subject, 'event', 'arg1', 'arg2');
+            });
         });
 
     }
