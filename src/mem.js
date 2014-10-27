@@ -15,7 +15,8 @@
                     subject: subject,
                     eventName: eventName,
                     action: action,
-                    once: options && options.once
+                    once: options && options.once,
+                    context: options && options.context
                 });
             },
 
@@ -51,7 +52,7 @@
                     }
 
                     try {
-                        callback.action.apply(subject, args);
+                        callback.action.apply(callback.context || subject, args);
                     } catch (error) {
                         if (console && console.error) {
                             console.error(error);
