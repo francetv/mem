@@ -15,7 +15,9 @@
                     subject: subject,
                     eventName: eventName,
                     action: action,
-                    once: options && options.once
+                    once: options && options.once,
+                    context: options && options.context,
+                    args: options && options.args
                 });
             },
 
@@ -42,6 +44,7 @@
 
                 this._callbacks = this._callbacks.filter(function(callback) {
                     var keep = !callback.once;
+                    var forceArgs = callback.args || [];
                     if (callback.subject !== subject) {
                         return true;
                     }
@@ -51,7 +54,7 @@
                     }
 
                     try {
-                        callback.action.apply(subject, args);
+                        callback.action.apply(callback.context || subject, forceArgs.concat(args));
                     } catch (error) {
                         if (console && console.error) {
                             console.error(error);
