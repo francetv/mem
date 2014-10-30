@@ -1,6 +1,6 @@
 {
   "name": "mem",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Minimalist event manager",
   "author": "FTVEN",
   "keywords": [
@@ -20,15 +20,17 @@
   "devDependencies": {
     "bower": "*",
     "grunt": "*",
-    "grunt-bump": "git://github.com/francetv/grunt-bump.git",
     "grunt-cli": "*",
     "grunt-contrib-clean": "*",
+    "grunt-contrib-rename": "*",
     "grunt-contrib-requirejs": "*",
     "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*",
     "grunt-mocha-phantomjs": "*",
     "jscoverage": "*",
     "json2htmlcov": "git://github.com/francetv/json2htmlcov.git",
-    "mocha-phantomjs": "*"
+    "mocha-phantomjs": "*",
+    "morkdown": "*"
   },
   "directories": {
     "test": "test"
