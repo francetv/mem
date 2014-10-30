@@ -4,10 +4,6 @@
         return describe('mem', function() {
             afterEach(function() {
                 mem._callbacks = [];
-
-                if (console.error.restore) {
-                    console.error.restore();
-                }
             });
 
             it ('should trigger events', function(done) {
@@ -133,15 +129,15 @@
             });
 
             it ('An error in a listener won\'t break all listeners', function(done) {
-                sinon.stub(console, 'error');
-
                 var subject = {};
+                var errors = [];
 
                 function count() {
                     count.val = (count.val || 0) + 1;
 
                     if (count.val === 2) {
-                        chai.expect(console.error.called).to.equal(true);
+                        chai.expect(errors.length).to.equal(1);
+                        chai.expect(errors[0].message).to.equal('sample error');
                         done();
                     }
                 }
@@ -153,6 +149,8 @@
                 mem.on(subject, 'event', count);
                 mem.on(subject, 'event', count2);
                 mem.on(subject, 'event', count);
+
+                mem.on(mem, 'error', function(error) { errors.push(error); });
 
                 mem.trigger(subject, 'event');
             });
@@ -204,6 +202,21 @@
                 mem.on(subject, 'event', context.method, { args: ['argf1', 'argf2'] });
 
                 mem.trigger(subject, 'event', 'arg1', 'arg2');
+            });
+
+            it('should catch errors and broadcast them as a mem  "error" event', function(done) {
+                var subject = {};
+
+                mem.on(subject, 'event', function() {
+                    throw new Error('error');
+                });
+
+                mem.on(mem, 'error', function(error) {
+                    chai.assert.equal(error.message, 'error');
+                    done();
+                });
+
+                mem.trigger(subject, 'event');
             });
         });
 
