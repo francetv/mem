@@ -20,7 +20,6 @@
   "devDependencies": {
     "bower": "*",
     "grunt": "*",
-    "grunt-bump": "git://github.com/francetv/grunt-bump.git",
     "grunt-cli": "*",
     "grunt-contrib-clean": "*",
     "grunt-contrib-requirejs": "*",
