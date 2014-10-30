@@ -218,6 +218,28 @@
 
                 mem.trigger(subject, 'event');
             });
+
+            it('should throw global error if there\'s no listenner for mem "error" events', function(done) {
+                var subject = {};
+                var backup = global.setTimeout;
+                global.setTimeout = function(callback) {
+                    global.setTimeout = backup;
+
+                    try {
+                        callback();
+                    }
+                    catch(error) {
+                        chai.assert.equal(error.message, 'error');
+                        done();
+                    }
+                };
+
+                mem.on(subject, 'event', function() {
+                    throw new Error('error');
+                });
+
+                mem.trigger(subject, 'event');
+            });
         });
 
     }
