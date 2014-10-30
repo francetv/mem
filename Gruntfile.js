@@ -30,27 +30,6 @@ module.exports = function(grunt) {
         }
       }
     },
-    bump: {
-      options: {
-        files: ['package.json', 'bower.json'],
-        updateConfigs: ['pkg', 'bwr'],
-        commit: true,
-        commitMessage: 'Release version %VERSION%',
-        commitFiles: [
-          'package.json',
-          'bower.json',
-          '<%= pkg.name %>.min.js',
-          'cov.html'
-        ],
-        commitForceAdd: true,
-        createTag: true,
-        tagName: '%VERSION%',
-        tagMessage: 'Version %VERSION%',
-        push: true,
-        pushTo: 'origin',
-        gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
-      }
-    },
     'check-coverage': {
       src: ['src/**/*.js'],
       options: {
@@ -61,11 +40,28 @@ module.exports = function(grunt) {
     'check-git-clean': {
       options: {
         ignore: [
-          '<%= pkg.name %>*.js',
+          '<%= pkg.name %>.js',
           '<%= pkg.name %>.min.js',
           'cov.html'
         ]
       }
+    },
+    rename: {
+      dev: {
+        files: [{
+          src: ['<%= pkg.name %>.js'],
+          dest: '<%= pkg.name %>.min.js'
+        }]
+      }
+    },
+    watch: {
+      dev: {
+        files: ['src/**/*.js'],
+        tasks: ['build-dev'],
+        options: {
+          spawn: false,
+        },
+      },
     }
   });
 
@@ -73,13 +69,17 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-bump');
+  grunt.loadNpmTasks('grunt-contrib-rename');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.loadTasks('grunt-tasks');
 
   grunt.renameTask('mocha_phantomjs', 'test');
 
   grunt.registerTask('build', ['clean:dist', 'clean:build_residues', 'requirejs', 'uglify', 'clean:build_residues']);
+  grunt.registerTask('build-dev', ['clean:dist', 'clean:build_residues', 'requirejs', 'rename:dev', 'clean:build_residues']);
+
+  grunt.registerTask('dev', ['build-dev', 'watch:dev']);
 
   grunt.registerTask('default', ['test:dev', 'build', 'test:build']);
 };
