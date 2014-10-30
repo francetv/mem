@@ -6,7 +6,7 @@
             return Array.prototype.slice.call(args, n);
         }
 
-        return {
+        var mem = {
             _callbacks: [],
 
             on: function on(subject, eventName, action, options) {
@@ -40,10 +40,10 @@
 
             trigger: function trigger(subject, eventName) {
                 var args = slice(arguments, 2);
+                var gotCallback = false;
 
                 this._callbacks = this._callbacks.filter(function(callback) {
                     var keep = !callback.once;
-                    var forceArgs = callback.args || [];
                     if (callback.subject !== subject) {
                         return true;
                     }
@@ -51,18 +51,35 @@
                     if (callback.eventName !== eventName) {
                         return true;
                     }
+                    var forceArgs = callback.args || [];
+                    gotCallback = true;
 
                     try {
                         callback.action.apply(callback.context || subject, forceArgs.concat(args));
                     } catch (error) {
-                        if (console && console.error) {
-                            console.error(error);
+                        if (!(subject === mem && eventName === 'error')) {
+                            mem.trigger(mem, 'error', error);
+                        }
+                        else {
+                            mem._fatal(error);
                         }
                     }
                     return keep;
                 });
+
+                if (subject === mem && eventName === 'error' && !gotCallback) {
+                    mem._fatal(arguments[2]);
+                }
+            },
+
+            _fatal: function _fatal(error) {
+                setTimeout(function() {
+                    throw error;
+                }, 0);
             }
         };
+
+        return mem;
     }
 
     if (typeof define === 'function' && define.amd) {
