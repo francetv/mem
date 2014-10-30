@@ -61,7 +61,7 @@
                             mem.trigger(mem, 'error', error);
                         }
                         else {
-                            mem.fatal(error);
+                            mem._fatal(error);
                         }
                     }
                     return keep;
