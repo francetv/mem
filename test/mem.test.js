@@ -240,6 +240,32 @@
 
                 mem.trigger(subject, 'event');
             });
+
+            it('should throw global error if there\'s an error in a mem "error" listenner', function(done) {
+                var subject = {};
+                var backup = global.setTimeout;
+                global.setTimeout = function(callback) {
+                    global.setTimeout = backup;
+
+                    try {
+                        callback();
+                    }
+                    catch(error) {
+                        chai.assert.equal(error.message, 'error2');
+                        done();
+                    }
+                };
+
+                mem.on(subject, 'event', function() {
+                    throw new Error('error1');
+                });
+
+                mem.on(mem, 'error', function(error) {
+                    throw new Error('error2');
+                });
+
+                mem.trigger(subject, 'event');
+            });
         });
 
     }
