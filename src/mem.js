@@ -58,11 +58,28 @@
                             callback.action.apply(callback.context || subject, callArgs)
                         );
                     } catch (error) {
-                        if (!(subject === mem && eventName === 'error')) {
-                            mem.trigger(mem, 'error', error);
+                        if (!(subject === mem && eventName === mem._error_eventName)) {
+                            mem.trigger(
+                                mem,
+                                mem._error_eventName,
+                                subject,
+                                eventName,
+                                error,
+                                callback.context,
+                                callback.action,
+                                callArgs
+                            );
                         }
                         else {
-                            mem._fatal(error);
+                            mem._fatal(
+                                mem._msg_error_listener_error,
+                                subject,
+                                eventName,
+                                error,
+                                callback.context,
+                                callback.action,
+                                callArgs
+                            );
                         }
                     }
                     return keep;
@@ -78,12 +95,24 @@
                     });
                 }
 
-                if (subject === mem && eventName === 'error' && !gotCallback) {
-                    mem._fatal(arguments[2]);
+                if (subject === mem && eventName === mem._error_eventName && !gotCallback) {
+                    mem._fatal(
+                        mem._msg_error_uncaught,
+                        arguments[2],
+                        arguments[3],
+                        arguments[4],
+                        arguments[5],
+                        arguments[6],
+                        arguments[7]
+                    );
                 }
 
                 return results;
             },
+
+            _error_eventName: 'error',
+            _msg_error_uncaught: 'mem error event uncaught',
+            _msg_error_listener_error: 'mem error event listener error',
 
             _callbacks: [],
 
@@ -108,9 +137,16 @@
                 return gotSubject;
             },
 
-            _fatal: function _fatal(error) {
+            _fatal: function _fatal(msg, subject, eventName, error, context, action, args) {
+                var fatal = new Error(msg + ': ' + error.message);
+                fatal.subject = subject;
+                fatal.eventName = eventName;
+                fatal.error = error;
+                fatal.context = context;
+                fatal.action = action;
+                fatal.args = args;
                 setTimeout(function() {
-                    throw error;
+                    throw fatal;
                 }, 0);
             }
         };

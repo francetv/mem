@@ -129,18 +129,13 @@
                 chai.assert.equal(count2.callCount, 2, 'should execute count2 2 times');
             });
 
-            it ('An error in a listener won\'t break all listeners', function(done) {
+            it ('An error in a listener won\'t break all listeners', function() {
                 var subject = {};
                 var errors = [];
 
                 function count() {
                     count.val = (count.val || 0) + 1;
-
-                    if (count.val === 2) {
-                        chai.expect(errors.length).to.equal(1);
-                        chai.expect(errors[0].message).to.equal('sample error');
-                        done();
-                    }
+                    return count.val;
                 }
 
                 function count2() {
@@ -151,9 +146,27 @@
                 mem.on(subject, 'event', count2);
                 mem.on(subject, 'event', count);
 
-                mem.on(mem, 'error', function(error) { errors.push(error); });
+                mem.on(mem, 'error', function(subject, eventName, error, context, action, args) {
+                    errors.push({
+                        subject: subject,
+                        eventName: eventName,
+                        error: error,
+                        context: context,
+                        action: action,
+                        args: args
+                    });
+                });
 
-                mem.trigger(subject, 'event');
+                var results = mem.trigger(subject, 'event');
+
+                chai.assert.equal(count.val, 2);
+                chai.assert.deepEqual(results, [1,2]);
+                chai.expect(errors.length).to.equal(1);
+                chai.expect(errors[0].error.message).to.equal('sample error');
+                chai.expect(errors[0].subject).to.equal(subject);
+                chai.expect(errors[0].eventName).to.equal('event');
+                chai.expect(errors[0].context).to.equal(undefined);
+                chai.expect(errors[0].action).to.equal(count2);
             });
 
             it('should execute callback with subject as execution context', function(done) {
@@ -212,7 +225,7 @@
                     throw new Error('error');
                 });
 
-                mem.on(mem, 'error', function(error) {
+                mem.on(mem, 'error', function(subject, eventName, error, context, action, args) {
                     chai.assert.equal(error.message, 'error');
                     done();
                 });
@@ -230,7 +243,7 @@
                         callback();
                     }
                     catch(error) {
-                        chai.assert.equal(error.message, 'error');
+                        chai.assert.equal(error.message, 'mem error event uncaught: error');
                         done();
                     }
                 };
@@ -252,7 +265,7 @@
                         callback();
                     }
                     catch(error) {
-                        chai.assert.equal(error.message, 'error2');
+                        chai.assert.equal(error.message, 'mem error event listener error: error2');
                         done();
                     }
                 };
