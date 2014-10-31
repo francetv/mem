@@ -15,7 +15,7 @@
   "main": "src/mem.js",
   "scripts": {
     "postinstall": "bower install",
-    "test": "grunt test"
+    "test": "grunt test:dev"
   },
   "devDependencies": {
     "bower": "*",
