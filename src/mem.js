@@ -45,10 +45,18 @@
                 var stack = this._forSubject(subject);
                 var results = [];
 
+                if (stack.running && ~stack.running.indexOf(eventName)) {
+                    throw new Error(mem._msg_recusions_not_allowed);
+                }
+
+                stack.running = stack.running || [];
+                stack.running.push(eventName);
+
                 stack.callbacks = stack.callbacks.filter(function(callback) {
                     if (callback.eventName !== eventName) {
                         return true;
                     }
+
                     gotCallback = true;
                     var keep = !callback.once;
                     var callArgs = (callback.args || []).concat(args);
@@ -113,6 +121,7 @@
             _error_eventName: 'error',
             _msg_error_uncaught: 'mem error event uncaught',
             _msg_error_listener_error: 'mem error event listener error',
+            _msg_recusions_not_allowed: 'mem event recursion not allowed',
 
             _callbacks: [],
 

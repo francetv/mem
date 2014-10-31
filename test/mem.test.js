@@ -280,8 +280,24 @@
 
                 mem.trigger(subject, 'event');
             });
-        });
 
+            it('should not allow recusion', function() {
+                var subject = {};
+                var errors = [];
+
+                mem.on(subject, 'event', function() {
+                    mem.trigger(subject, 'event');
+                });
+
+                mem.on(mem, 'error', function(sub, evname, error) {
+                    errors.push(error);
+                });
+
+                mem.trigger(subject, 'event');
+
+                chai.assert.equal(errors[0].message, 'mem event recursion not allowed');
+            });
+        });
     }
 
     if (typeof define === 'function' && define.amd) {
