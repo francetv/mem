@@ -28,26 +28,27 @@
                 mem.trigger(subject, 'event', 'one argument', 'another one', 42);
             });
 
-            it ('should trigger events on all listeners', function(done) {
+            it ('should trigger events on all listeners and get results', function() {
                 var subject = {};
 
                 function count() {
                     count.val = (count.val || 0) + 1;
-
-                    if (count.val === 2) {
-                        done();
-                    }
                 }
 
                 mem.on(subject, 'event', function() {
                     count();
+                    return 1;
                 });
 
                 mem.on(subject, 'event', function() {
                     count();
+                    return 2;
                 });
 
-                mem.trigger(subject, 'event');
+                var results = mem.trigger(subject, 'event');
+
+                chai.assert.deepEqual(results, [1, 2]);
+                chai.assert.equal(count.val, 2);
             });
 
             it('should stop listening to events after a general off', function() {

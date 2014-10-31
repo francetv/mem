@@ -43,17 +43,20 @@
                 var args = slice(arguments, 2);
                 var gotCallback = false;
                 var stack = this._forSubject(subject);
+                var results = [];
 
                 stack.callbacks = stack.callbacks.filter(function(callback) {
                     if (callback.eventName !== eventName) {
                         return true;
                     }
-                    var forceArgs = callback.args || [];
                     gotCallback = true;
                     var keep = !callback.once;
+                    var callArgs = (callback.args || []).concat(args);
 
                     try {
-                        callback.action.apply(callback.context || subject, forceArgs.concat(args));
+                        results.push(
+                            callback.action.apply(callback.context || subject, callArgs)
+                        );
                     } catch (error) {
                         if (!(subject === mem && eventName === 'error')) {
                             mem.trigger(mem, 'error', error);
@@ -78,6 +81,8 @@
                 if (subject === mem && eventName === 'error' && !gotCallback) {
                     mem._fatal(arguments[2]);
                 }
+
+                return results;
             },
 
             _callbacks: [],
