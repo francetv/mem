@@ -275,6 +275,6 @@
         define(['mem', 'chai', 'sinon', 'mocha'], factory);
     } else {
         // Browser globals
-        factory(mem, chai, sinon, mocha);
+        factory(global.mem, global.chai, global.sinon, global.mocha);
     }
 }(this));

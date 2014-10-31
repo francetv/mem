@@ -67,4 +67,4 @@
             mocha.run();
         }
     });
-}(this, this.document, this.__TEST_SUITES__, this.__LIB_PATHS__, this.__BASE_URL__, __COMPONENTS_PATH__));
+}(this, this.document, this.__TEST_SUITES__, this.__LIB_PATHS__, this.__BASE_URL__, this.__COMPONENTS_PATH__));
