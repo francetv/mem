@@ -95,11 +95,11 @@
                         }
                     }
 
-                    stack.running = stack.running.filter(function(evtName) {
-                        return eventName !== evtName;
-                    });
-
                     return keep;
+                });
+
+                stack.running = stack.running.filter(function(evtName) {
+                    return eventName !== evtName;
                 });
 
                 // remove subject if no more listeners attached
