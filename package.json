@@ -1,6 +1,6 @@
 {
   "name": "mem",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Minimalist event manager",
   "author": "FTVEN",
   "keywords": [
@@ -15,7 +15,7 @@
   "main": "src/mem.js",
   "scripts": {
     "postinstall": "bower install",
-    "test": "grunt test"
+    "test": "grunt test:dev"
   },
   "devDependencies": {
     "bower": "*",
@@ -28,9 +28,11 @@
     "grunt-contrib-watch": "*",
     "grunt-mocha-phantomjs": "*",
     "jscoverage": "*",
+    "jshint": "^2.5.8",
     "json2htmlcov": "git://github.com/francetv/json2htmlcov.git",
     "mocha-phantomjs": "*",
-    "morkdown": "*"
+    "morkdown": "*",
+    "precommit-hook": "^1.0.7"
   },
   "directories": {
     "test": "test"
