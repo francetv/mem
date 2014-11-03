@@ -311,6 +311,20 @@
 
                 chai.assert.equal(count, 2, 'mem event recursion not allowed');
             });
+
+            it('Avoid a recursion detector bug in specific case after triggering a not yet listened event', function() {
+                var subject = {};
+
+                mem.on(subject, 'event', function() {
+                });
+
+                mem.trigger(subject, 'event2');
+
+                mem.on(subject, 'event2', function() {
+                });
+
+                mem.trigger(subject, 'event2');
+            });
         });
     }
 
