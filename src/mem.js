@@ -46,7 +46,11 @@
                 var results = [];
 
                 if (stack.running && ~stack.running.indexOf(eventName)) {
-                    throw new Error(mem._msg_recusions_not_allowed);
+                    var error = new Error(mem._msg_recusions_not_allowed + ': ' + eventName + ' on ' + subject.toString());
+                    error.subject = subject;
+                    error.eventName = eventName;
+                    error.args = args;
+                    throw error;
                 }
 
                 stack.running = stack.running || [];
@@ -90,6 +94,11 @@
                             );
                         }
                     }
+
+                    stack.running = stack.running.filter(function(evtName) {
+                        return eventName !== evtName;
+                    });
+
                     return keep;
                 });
 

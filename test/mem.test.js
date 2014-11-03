@@ -295,7 +295,7 @@
 
                 mem.trigger(subject, 'event');
 
-                chai.assert.equal(errors[0].message, 'mem event recursion not allowed');
+                chai.assert.equal(errors[0].message, 'mem event recursion not allowed: event on [object Object]');
             });
 
             it('should cleanup recursion detector after each run', function() {
