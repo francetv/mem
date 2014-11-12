@@ -1,12 +1,12 @@
-;(function(global) {
+(function(global) {
     function factory(mem, chai, sinon, mocha) {
 
         return describe('mem', function() {
             afterEach(function() {
-                mem._callbacks = [];
+                mem._subjects = [];
             });
 
-            it ('should trigger events', function(done) {
+            it('should trigger events', function(done) {
                 var subject = {};
                 mem.on(subject, 'event', function() {
                     done();
@@ -15,7 +15,7 @@
                 mem.trigger(subject, 'event');
             });
 
-            it ('should transmit arguments to event handlers', function(done) {
+            it('should transmit arguments to event handlers', function(done) {
                 var subject = {};
                 mem.on(subject, 'event', function(arg1, arg2, arg3, arg4) {
                     chai.assert.equal(arg1, 'one argument');
@@ -28,7 +28,7 @@
                 mem.trigger(subject, 'event', 'one argument', 'another one', 42);
             });
 
-            it ('should trigger events on all listeners and get results', function() {
+            it('should trigger events on all listeners and get results', function() {
                 var subject = {};
 
                 function count() {
@@ -66,18 +66,20 @@
                 chai.assert.equal(callback2.callCount, 0);
             });
 
-            it ('should trigger events only once on listeners that provide the once option', function() {
+            it('should trigger events only once on listeners that provide the once option', function() {
                 var subject = {};
                 var eventCallback = sinon.stub();
 
-                mem.on(subject, 'event', eventCallback, {once: true});
+                mem.on(subject, 'event', eventCallback, {
+                    once: true
+                });
 
                 mem.trigger(subject, 'event');
                 mem.trigger(subject, 'event');
                 chai.assert.equal(eventCallback.callCount, 1);
             });
 
-            it ('should trigger events on all listeners execept "offed" ones', function(done) {
+            it('should trigger events on all listeners execept "offed" ones', function(done) {
                 var subject = {};
 
                 function count() {
@@ -102,7 +104,7 @@
                 mem.trigger(subject, 'event');
             });
 
-            it ('off will remove ALL matching listeners', function() {
+            it('off will remove ALL matching listeners', function() {
                 var subject1 = {};
                 var subject2 = {};
 
@@ -129,7 +131,7 @@
                 chai.assert.equal(count2.callCount, 2, 'should execute count2 2 times');
             });
 
-            it ('An error in a listener won\'t break all listeners', function() {
+            it('An error in a listener won\'t break all listeners', function() {
                 var subject = {};
                 var errors = [];
 
@@ -160,7 +162,7 @@
                 var results = mem.trigger(subject, 'event');
 
                 chai.assert.equal(count.val, 2);
-                chai.assert.deepEqual(results, [1,2]);
+                chai.assert.deepEqual(results, [1, 2]);
                 chai.expect(errors.length).to.equal(1);
                 chai.expect(errors[0].error.message).to.equal('sample error');
                 chai.expect(errors[0].subject).to.equal(subject);
@@ -196,7 +198,9 @@
                     }
                 };
 
-                mem.on(subject, 'event', context.method, { context: context });
+                mem.on(subject, 'event', context.method, {
+                    context: context
+                });
 
                 mem.trigger(subject, 'event');
             });
@@ -213,7 +217,9 @@
                     }
                 };
 
-                mem.on(subject, 'event', context.method, { args: ['argf1', 'argf2'] });
+                mem.on(subject, 'event', context.method, {
+                    args: ['argf1', 'argf2']
+                });
 
                 mem.trigger(subject, 'event', 'arg1', 'arg2');
             });
@@ -241,8 +247,7 @@
 
                     try {
                         callback();
-                    }
-                    catch(error) {
+                    } catch (error) {
                         chai.assert.equal(error.message, 'mem error event uncaught: error');
                         done();
                     }
@@ -263,8 +268,7 @@
 
                     try {
                         callback();
-                    }
-                    catch(error) {
+                    } catch (error) {
                         chai.assert.equal(error.message, 'mem error event listener error: error2');
                         done();
                     }
@@ -315,13 +319,49 @@
             it('Avoid a recursion detector bug in specific case after triggering a not yet listened event', function() {
                 var subject = {};
 
-                mem.on(subject, 'event', function() {
-                });
+                mem.on(subject, 'event', function() {});
 
                 mem.trigger(subject, 'event2');
 
-                mem.on(subject, 'event2', function() {
+                mem.on(subject, 'event2', function() {});
+
+                mem.trigger(subject, 'event2');
+            });
+
+            it('should clean correctly the stack with the off (not only inside the current trigger)', function() {
+                var errors = [];
+                var getStack = function getStack() {
+                    return mem._subjects.filter(function(item) {
+                        return item.subject === subject;
+                    })[0].callbacks;
+                };
+                var subject = {};
+                var events = [{
+                    name: 'event1',
+                    callback: function() {
+                        var event = events[1];
+                        mem.off(subject, event.name, event.callback);
+                        chai.assert.equal(getStack().length, 1, 'mem stack for this subject should be clean');
+                    }
+                }, {
+                    name: 'event2',
+                    callback: function() {}
+                }];
+
+                mem.on(mem, 'error', function(subject, eventName, error) {
+                    errors.push(error);
                 });
+
+                events.forEach(function(event) {
+                    mem.on(subject, event.name, event.callback);
+                });
+
+                chai.assert.equal(getStack().length, 2, 'mem stack for this subject should be completely filled');
+
+                mem.trigger(subject, 'event1');
+
+                chai.assert.equal(errors.length, 0, errors.length > 1 ? 'error (' + errors[0].message + ')' : '');
+                chai.assert.equal(getStack().length, 1, 'mem stack for this subject is never clean');
 
                 mem.trigger(subject, 'event2');
             });
