@@ -18,7 +18,7 @@
             },
 
             off: function off(subject, eventName, action) {
-                this._callbacks = this._callbacks.filter(function(stack) {
+                this._subjects = this._subjects.filter(function(stack) {
                     if (subject && stack.subject !== subject) {
                         return true;
                     }
@@ -56,13 +56,13 @@
                 stack.running = stack.running || [];
                 stack.running.push(eventName);
 
-                stack.callbacks = stack.callbacks.filter(function(callback) {
+                stack.callbacks.forEach(function(callback) {
                     if (callback.eventName !== eventName) {
-                        return true;
+                        return;
                     }
 
                     gotCallback = true;
-                    var keep = !callback.once;
+
                     var callArgs = (callback.args || []).concat(args);
 
                     try {
@@ -81,8 +81,7 @@
                                 callback.action,
                                 callArgs
                             );
-                        }
-                        else {
+                        } else {
                             mem._fatal(
                                 mem._msg_error_listener_error,
                                 subject,
@@ -94,8 +93,14 @@
                             );
                         }
                     }
+                });
 
-                    return keep;
+                stack.callbacks = stack.callbacks.filter(function(callback) {
+                    if (callback.eventName !== eventName) {
+                        return true;
+                    }
+
+                    return !callback.once;
                 });
 
                 stack.running = stack.running.filter(function(evtName) {
@@ -104,7 +109,7 @@
 
                 // remove subject if no more listeners attached
                 if (!stack.callbacks.length) {
-                    this._callbacks = this._callbacks.filter(function(stack) {
+                    this._subjects = this._subjects.filter(function(stack) {
                         if (stack.subject === subject) {
                             return false;
                         }
@@ -132,11 +137,11 @@
             _msg_error_listener_error: 'mem error event listener error',
             _msg_recusions_not_allowed: 'mem event recursion not allowed',
 
-            _callbacks: [],
+            _subjects: [],
 
             _forSubject: function _forSubject(subject) {
                 var gotSubject;
-                this._callbacks.some(function(stack) {
+                this._subjects.some(function(stack) {
                     if (stack.subject !== subject) {
                         return false;
                     }
@@ -149,7 +154,7 @@
                         subject: subject,
                         callbacks: []
                     };
-                    this._callbacks.push(gotSubject);
+                    this._subjects.push(gotSubject);
                 }
 
                 return gotSubject;
