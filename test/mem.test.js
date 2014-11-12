@@ -361,7 +361,9 @@
 
                 mem.on(subject, 'event', function() {});
 
-                mem.trigger(subject, 'event2');
+                withMemErrorsSync(function() {
+                    mem.trigger(subject, 'event2');
+                });
 
                 mem.on(subject, 'event2', function() {});
 
@@ -370,42 +372,24 @@
                 });
             });
 
-            it('should clean correctly the stack with the off (not only inside the current trigger)', function() {
-                var errors = [];
-                var getStack = function getStack() {
-                    return mem._subjects.filter(function(item) {
-                        return item.subject === subject;
-                    })[0].callbacks;
-                };
+            it('should be possible to use mem.off during a mem event on the same subject', function() {
                 var subject = {};
-                var events = [{
-                    name: 'event1',
-                    callback: function() {
-                        var event = events[1];
-                        mem.off(subject, event.name, event.callback);
-                        chai.assert.equal(getStack().length, 1, 'mem stack for this subject should be clean');
-                    }
-                }, {
-                    name: 'event2',
-                    callback: function() {}
-                }];
 
-                mem.on(mem, 'error', function(subject, eventName, error) {
-                    errors.push(error);
+                function callback1() {
+                    mem.off(subject, 'event2', callback2);
+                }
+
+                var callback2 = sinon.stub();
+
+                mem.on(subject, 'event1', callback1);
+                mem.on(subject, 'event2', callback2);
+
+                withMemErrorsSync(function() {
+                    mem.trigger(subject, 'event1');
+                    mem.trigger(subject, 'event2');
                 });
 
-                events.forEach(function(event) {
-                    mem.on(subject, event.name, event.callback);
-                });
-
-                chai.assert.equal(getStack().length, 2, 'mem stack for this subject should be completely filled');
-
-                mem.trigger(subject, 'event1');
-
-                chai.assert.equal(errors.length, 0, errors.length > 1 ? 'error (' + errors[0].message + ')' : '');
-                chai.assert.equal(getStack().length, 1, 'mem stack for this subject is never clean');
-
-                mem.trigger(subject, 'event2');
+                chai.assert.equal(callback2.callCount, 0, 'Callback2 should not be called');
             });
         });
     }
