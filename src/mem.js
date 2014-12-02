@@ -117,16 +117,21 @@
                     });
                 }
 
-                if (subject === mem && eventName === mem._error_eventName && !gotCallback) {
-                    mem._fatal(
-                        mem._msg_error_uncaught,
-                        arguments[2],
-                        arguments[3],
-                        arguments[4],
-                        arguments[5],
-                        arguments[6],
-                        arguments[7]
-                    );
+                if (!gotCallback) {
+                    if (subject === mem && eventName === mem._error_eventName) {
+                        mem._fatal(
+                            mem._msg_error_uncaught,
+                            arguments[2],
+                            arguments[3],
+                            arguments[4],
+                            arguments[5],
+                            arguments[6],
+                            arguments[7]
+                        );
+                    }
+                    else {
+                        mem.trigger(mem, 'orphan_event', subject, eventName, args);
+                    }
                 }
 
                 return results;
