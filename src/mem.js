@@ -129,14 +129,15 @@
                             arguments[7]
                         );
                     }
-                    else {
-                        mem.trigger(mem, 'orphan_event', subject, eventName, args);
+                    else if (eventName !== mem._orphan_eventName) {
+                        mem.trigger(mem, mem._orphan_eventName, subject, eventName, args);
                     }
                 }
 
                 return results;
             },
 
+            _orphan_eventName: 'orphan_event',
             _error_eventName: 'error',
             _msg_error_uncaught: 'mem error event uncaught',
             _msg_error_listener_error: 'mem error event listener error',
