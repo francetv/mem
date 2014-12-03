@@ -8,7 +8,7 @@
 
         var mem = {
             on: function on(subject, eventName, action, options) {
-                this._forSubject(subject).callbacks.push({
+                mem._forSubject(subject).callbacks.push({
                     eventName: eventName,
                     action: action,
                     once: options && options.once,
@@ -18,7 +18,7 @@
             },
 
             off: function off(subject, eventName, action) {
-                this._subjects = this._subjects.filter(function(stack) {
+                mem._subjects = mem._subjects.filter(function(stack) {
                     if (subject && stack.subject !== subject) {
                         return true;
                     }
@@ -42,7 +42,7 @@
             trigger: function trigger(subject, eventName) {
                 var args = slice(arguments, 2);
                 var gotCallback = false;
-                var stack = this._forSubject(subject);
+                var stack = mem._forSubject(subject);
                 var results = [];
 
                 if (stack.running && ~stack.running.indexOf(eventName)) {
@@ -109,7 +109,7 @@
 
                 // remove subject if no more listeners attached
                 if (!stack.callbacks.length) {
-                    this._subjects = this._subjects.filter(function(stack) {
+                    mem._subjects = mem._subjects.filter(function(stack) {
                         if (stack.subject === subject) {
                             return false;
                         }
@@ -117,21 +117,27 @@
                     });
                 }
 
-                if (subject === mem && eventName === mem._error_eventName && !gotCallback) {
-                    mem._fatal(
-                        mem._msg_error_uncaught,
-                        arguments[2],
-                        arguments[3],
-                        arguments[4],
-                        arguments[5],
-                        arguments[6],
-                        arguments[7]
-                    );
+                if (!gotCallback) {
+                    if (subject === mem && eventName === mem._error_eventName) {
+                        mem._fatal(
+                            mem._msg_error_uncaught,
+                            arguments[2],
+                            arguments[3],
+                            arguments[4],
+                            arguments[5],
+                            arguments[6],
+                            arguments[7]
+                        );
+                    }
+                    else if (eventName !== mem._orphan_eventName) {
+                        mem.trigger(mem, mem._orphan_eventName, subject, eventName, args);
+                    }
                 }
 
                 return results;
             },
 
+            _orphan_eventName: 'orphan_event',
             _error_eventName: 'error',
             _msg_error_uncaught: 'mem error event uncaught',
             _msg_error_listener_error: 'mem error event listener error',
@@ -141,7 +147,7 @@
 
             _forSubject: function _forSubject(subject) {
                 var gotSubject;
-                this._subjects.some(function(stack) {
+                mem._subjects.some(function(stack) {
                     if (stack.subject !== subject) {
                         return false;
                     }
@@ -154,7 +160,7 @@
                         subject: subject,
                         callbacks: []
                     };
-                    this._subjects.push(gotSubject);
+                    mem._subjects.push(gotSubject);
                 }
 
                 return gotSubject;
