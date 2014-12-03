@@ -1,6 +1,6 @@
 {
   "name": "mem",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "Minimalist event manager",
   "authors": [
     "FTVEN"
