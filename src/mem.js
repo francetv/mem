@@ -8,13 +8,23 @@
 
         var mem = {
             on: function on(subject, eventName, action, options) {
-                mem._forSubject(subject).callbacks.push({
+                var stack = mem._forSubject(subject);
+
+                var isNewListener = !stack.callbacks.some(function(callback) {
+                    return callback.eventName === eventName;
+                });
+
+                stack.callbacks.push({
                     eventName: eventName,
                     action: action,
                     iterations: (options && ((options.once && 1) || options.iterations)) || null,
                     context: options && options.context,
                     args: options && options.args
                 });
+
+                if (isNewListener && eventName !== mem._new_event_tracked_eventName) {
+                    mem.trigger(subject, mem._new_event_tracked_eventName, eventName);
+                }
             },
 
             off: function off(subject, eventName, action) {
@@ -141,6 +151,7 @@
                 return results;
             },
 
+            _new_event_tracked_eventName: 'event_tracked',
             _orphan_eventName: 'orphan_event',
             _error_eventName: 'error',
             _msg_error_uncaught: 'mem error event uncaught',
