@@ -452,6 +452,22 @@
                 chai.assert.equal(count3, 7);
                 chai.assert.equal(count4, 1);
             });
+
+            it('should be possible to get a "event_tracked" event on the subject when adding a listener', function() {
+                var subject = {};
+                var called = false;
+
+                mem.on(subject, 'event_tracked', function(eventName) {
+                    chai.assert.equal(eventName, 'event');
+                    called = true;
+                });
+
+                withMemErrorsSync(function() {
+                    mem.on(subject, 'event', function() {});
+                });
+
+                chai.assert.equal(called, true);
+            });
         });
     }
 
