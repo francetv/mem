@@ -409,6 +409,49 @@
 
                 chai.assert.equal(called, true);
             });
+
+            it('should be possible to set iteration number for callbacks', function() {
+                var subject = {};
+                var count1 = 0;
+                var count2 = 0;
+                var count3 = 0;
+                var count4 = 0;
+
+                mem.on(subject, 'event', function() {
+                    count1+=1;
+                }, {
+                    iterations: 3
+                });
+
+                mem.on(subject, 'event', function() {
+                    count2+=1;
+                }, {
+                    iterations: 1
+                });
+
+                mem.on(subject, 'event', function() {
+                    count3+=1;
+                });
+
+                mem.on(subject, 'event', function() {
+                    count4+=1;
+                }, {
+                    once: true
+                });
+
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+
+                chai.assert.equal(count1, 3);
+                chai.assert.equal(count2, 1);
+                chai.assert.equal(count3, 7);
+                chai.assert.equal(count4, 1);
+            });
         });
     }
 
