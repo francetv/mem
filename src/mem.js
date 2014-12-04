@@ -11,7 +11,7 @@
                 mem._forSubject(subject).callbacks.push({
                     eventName: eventName,
                     action: action,
-                    once: options && options.once,
+                    iterations: (options && ((options.once && 1) || options.iterations)) || null,
                     context: options && options.context,
                     args: options && options.args
                 });
@@ -63,6 +63,10 @@
 
                     gotCallback = true;
 
+                    if (callback.iterations) {
+                        callback.iterations-= 1;
+                    }
+
                     var callArgs = (callback.args || []).concat(args);
 
                     try {
@@ -100,7 +104,7 @@
                         return true;
                     }
 
-                    return !callback.once;
+                    return callback.iterations !== 0;
                 });
 
                 stack.running = stack.running.filter(function(evtName) {
