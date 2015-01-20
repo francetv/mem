@@ -392,17 +392,81 @@
                 chai.assert.equal(callback2.callCount, 0, 'Callback2 should not be called');
             });
 
-            it('should be possible to catch all orphan events on mem', function(done) {
+            it('should be possible to catch all orphan events on mem', function() {
                 var subject = {};
+                var called = false;
 
                 mem.on(mem, 'orphan_event', function(sub, eventName, args) {
                     chai.assert.equal(sub, subject, 'sub should be the expected subject');
                     chai.assert.equal(eventName, 'event', 'Callback2 should not be called');
                     chai.assert.deepEqual(args, [], 'event arguments should be an empty array');
-                    done();
+                    called = true;
+                });
+
+                withMemErrorsSync(function() {
+                    mem.trigger(subject, 'event');
+                });
+
+                chai.assert.equal(called, true);
+            });
+
+            it('should be possible to set iteration number for callbacks', function() {
+                var subject = {};
+                var count1 = 0;
+                var count2 = 0;
+                var count3 = 0;
+                var count4 = 0;
+
+                mem.on(subject, 'event', function() {
+                    count1+=1;
+                }, {
+                    iterations: 3
+                });
+
+                mem.on(subject, 'event', function() {
+                    count2+=1;
+                }, {
+                    iterations: 1
+                });
+
+                mem.on(subject, 'event', function() {
+                    count3+=1;
+                });
+
+                mem.on(subject, 'event', function() {
+                    count4+=1;
+                }, {
+                    once: true
                 });
 
                 mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+                mem.trigger(subject, 'event');
+
+                chai.assert.equal(count1, 3);
+                chai.assert.equal(count2, 1);
+                chai.assert.equal(count3, 7);
+                chai.assert.equal(count4, 1);
+            });
+
+            it('should be possible to get a "event_tracked" event on the subject when adding a listener', function() {
+                var subject = {};
+                var called = false;
+
+                mem.on(subject, 'event_tracked', function(eventName) {
+                    chai.assert.equal(eventName, 'event');
+                    called = true;
+                });
+
+                withMemErrorsSync(function() {
+                    mem.on(subject, 'event', function() {});
+                });
+
+                chai.assert.equal(called, true);
             });
         });
     }
