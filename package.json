@@ -19,6 +19,9 @@
   },
   "devDependencies": {
     "bower": "*",
+    "ftv-mergeup": "^1.4.1",
+    "ftv-prerelease": "^1.0.1",
+    "ftv-release": "^1.0.1",
     "grunt": "*",
     "grunt-cli": "*",
     "grunt-contrib-clean": "*",
