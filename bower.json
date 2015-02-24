@@ -7,7 +7,7 @@
     "keywords": ["events"],
     "license": "MIT",
     "private": true,
-    "homepage": "https://gitlab.ftven.net/player/mem",
+    "homepage": "https://github.com/francetv/mem",
     "main": "mem.min.js",
     "devDependencies": {
         "requirejs-bower": "*",

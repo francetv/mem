@@ -8,7 +8,7 @@
     "private": true,
     "repository": {
         "type": "git",
-        "url": "https://gitlab.ftven.net/player/mem"
+        "url": "https://github.com/francetv/mem.git"
     },
     "main": "src/mem.js",
     "scripts": {
