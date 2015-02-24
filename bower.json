@@ -1,1 +1,29 @@
-{"name":"mem","version":"0.7.0","description":"Minimalist event manager","authors":["FTVEN"],"moduleType":["amd","globals"],"keywords":["events"],"license":"MIT","private":true,"homepage":"https://gitlab.ftven.net/player/mem","main":"mem.min.js","devDependencies":{"requirejs-bower":"*","mocha":"*","chai":"*","sinonjs":"*"},"ignore":["**/.*","node_modules","bower_components","test","src","cov.html","Gruntfile.js","grunt-tasks","package.json"]}
+{
+    "name": "mem",
+    "version": "0.7.0",
+    "description": "Minimalist event manager",
+    "authors": ["FTVEN"],
+    "moduleType": ["amd", "globals"],
+    "keywords": ["events"],
+    "license": "MIT",
+    "private": true,
+    "homepage": "https://gitlab.ftven.net/player/mem",
+    "main": "mem.min.js",
+    "devDependencies": {
+        "requirejs-bower": "*",
+        "mocha": "*",
+        "chai": "*",
+        "sinonjs": "*"
+    },
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "src",
+        "cov.html",
+        "Gruntfile.js",
+        "grunt-tasks",
+        "package.json"
+    ]
+}
