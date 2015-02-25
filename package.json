@@ -5,7 +5,6 @@
     "author": "FTVEN",
     "keywords": ["events"],
     "license": "MIT",
-    "private": true,
     "repository": {
         "type": "git",
         "url": "https://github.com/francetv/mem.git"
