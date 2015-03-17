@@ -16,9 +16,9 @@
     },
     "devDependencies": {
         "bower": "*",
-        "ftv-mergeup": "^1.4.1",
-        "ftv-prerelease": "^1.0.1",
-        "ftv-release": "^1.0.1",
+        "ftv-mergeup": "*",
+        "ftv-prerelease": "*",
+        "ftv-release": "*",
         "grunt": "*",
         "grunt-cli": "*",
         "grunt-contrib-clean": "*",
@@ -28,11 +28,11 @@
         "grunt-contrib-watch": "*",
         "grunt-mocha-phantomjs": "*",
         "jscoverage": "*",
-        "jshint": "^2.5.8",
+        "jshint": "*",
         "json2htmlcov": "git://github.com/francetv/json2htmlcov.git",
         "mocha-phantomjs": "*",
         "morkdown": "*",
-        "precommit-hook": "^1.0.7"
+        "precommit-hook": "*"
     },
     "directories": {
         "test": "test"
