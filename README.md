@@ -11,7 +11,7 @@ This library has been declined in a bower component so in order to use it just a
 ```json
 "dependencies": {
     ...
-    "mem": "git@gitlab.ftven.net:player/mem.git"
+    "mem": "https://github.com/francetv/mem.git"
     ...
 }
 ```
