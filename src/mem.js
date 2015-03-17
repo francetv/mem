@@ -198,7 +198,10 @@
         return mem;
     }
 
-    if (typeof define === 'function' && define.amd) {
+    if (typeof module === 'object' && module.exports) {
+        module.exports = factory();
+    }
+    else if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define([], factory);
     } else {
