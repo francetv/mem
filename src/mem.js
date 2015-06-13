@@ -28,6 +28,7 @@
             },
 
             off: function off(subject, eventName, action) {
+                var eventsOff = [];
                 mem._subjects = mem._subjects.filter(function(stack) {
                     if (subject && stack.subject !== subject) {
                         return true;
@@ -42,7 +43,19 @@
                             return true;
                         }
 
+                        if (!~eventsOff.indexOf(callback.eventName)) {
+                            eventsOff.push(callback.eventName);
+                        }
+
                         return false;
+                    });
+
+                    eventsOff.forEach(function(eventName) {
+                        if (!stack.callbacks.some(function(callback) {
+                            return eventName === callback.eventName;
+                        })) {
+                            mem.trigger(stack.subject, mem._event_untracked_eventName, eventName);
+                        }
                     });
 
                     return !!stack.callbacks.length;
@@ -109,29 +122,40 @@
                     }
                 });
 
-                stack.callbacks = stack.callbacks.filter(function(callback) {
-                    if (callback.eventName !== eventName) {
-                        return true;
-                    }
-
-                    return callback.iterations !== 0;
-                });
-
                 stack.running = stack.running.filter(function(evtName) {
                     return eventName !== evtName;
                 });
 
-                // remove subject if no more listeners attached
-                if (!stack.callbacks.length) {
-                    mem._subjects = mem._subjects.filter(function(stack) {
-                        if (stack.subject === subject) {
-                            return false;
+                if (gotCallback) {
+                    var stillHaveCallback = false;
+                    stack.callbacks = stack.callbacks.filter(function(callback) {
+                        if (callback.eventName !== eventName) {
+                            return true;
                         }
-                        return true;
-                    });
-                }
 
-                if (!gotCallback) {
+                        if (callback.iterations !== 0) {
+                            stillHaveCallback = true;
+                            return true;
+                        }
+
+                        return false;
+                    });
+
+                    // remove subject if no more listeners attached
+                    if (!stack.callbacks.length) {
+                        mem._subjects = mem._subjects.filter(function(stack) {
+                            if (stack.subject === subject) {
+                                return false;
+                            }
+                            return true;
+                        });
+                    }
+
+                    if (!stillHaveCallback) {
+                        mem.trigger(subject, mem._event_untracked_eventName, eventName);
+                    }
+                }
+                else {
                     if (subject === mem && eventName === mem._error_eventName) {
                         mem._fatal(
                             mem._msg_error_uncaught,
@@ -152,6 +176,7 @@
             },
 
             _new_event_tracked_eventName: 'event_tracked',
+            _event_untracked_eventName: 'event_untracked',
             _orphan_eventName: 'orphan_event',
             _error_eventName: 'error',
             _msg_error_uncaught: 'mem error event uncaught',
