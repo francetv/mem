@@ -39,7 +39,7 @@
                         // In browser, add mocha styles
                         var mochaStyle = document.createElement('link');
                         mochaStyle.setAttribute('rel', 'stylesheet');
-                        mochaStyle.setAttribute('href', paths.mocha + '.css');
+                        mochaStyle.setAttribute('href', __BASE_URL__ + paths.mocha + '.css');
                         document.head.appendChild(mochaStyle);
                     }
 
