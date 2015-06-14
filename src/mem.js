@@ -28,13 +28,16 @@
             },
 
             off: function off(subject, eventName, action) {
-                var eventsOff = [];
+                var eventsOffIndex = {};
                 mem._subjects = mem._subjects.filter(function(stack) {
                     if (subject && stack.subject !== subject) {
                         return true;
                     }
 
+                    var eventsNbrIndex = {};
+
                     stack.callbacks = stack.callbacks.filter(function(callback) {
+                        eventsNbrIndex[callback.eventName] = (eventsNbrIndex[callback.eventName] || 0) + 1;
                         if (eventName && callback.eventName !== eventName) {
                             return true;
                         }
@@ -43,17 +46,14 @@
                             return true;
                         }
 
-                        if (!~eventsOff.indexOf(callback.eventName)) {
-                            eventsOff.push(callback.eventName);
-                        }
+                        eventsNbrIndex[callback.eventName] -= 1;
+                        eventsOffIndex[callback.eventName] = true;
 
                         return false;
                     });
 
-                    eventsOff.forEach(function(eventName) {
-                        if (!stack.callbacks.some(function(callback) {
-                            return eventName === callback.eventName;
-                        })) {
+                    Object.keys(eventsOffIndex).forEach(function(eventName) {
+                        if (!eventsNbrIndex[eventName]) {
                             mem.trigger(stack.subject, mem._event_untracked_eventName, eventName);
                         }
                     });
