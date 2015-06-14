@@ -68,6 +68,7 @@
                 var stack = mem._forSubject(subject);
                 var results = [];
 
+                // detect recursion loops (listener of an event trying to trigger this same event)
                 if (stack.running && ~stack.running.indexOf(eventName)) {
                     var error = new Error(mem._msg_recusions_not_allowed + ': ' + eventName + ' on ' + subject.toString());
                     error.subject = subject;
@@ -79,6 +80,7 @@
                 stack.running = stack.running || [];
                 stack.running.push(eventName);
 
+                // exec matching listeners
                 stack.callbacks.forEach(function(callback) {
                     if (callback.eventName !== eventName) {
                         return;
@@ -122,12 +124,15 @@
                     }
                 });
 
+                // clean recursion detector
                 stack.running = stack.running.filter(function(evtName) {
                     return eventName !== evtName;
                 });
 
                 if (gotCallback) {
                     var stillHaveCallback = false;
+
+                    // Remove callbacks with iterations down to 0
                     stack.callbacks = stack.callbacks.filter(function(callback) {
                         if (callback.eventName !== eventName) {
                             return true;
@@ -156,6 +161,7 @@
                     }
                 }
                 else {
+                    // no listener on a mem error event: it becomes an error sent to root error handler
                     if (subject === mem && eventName === mem._error_eventName) {
                         mem._fatal(
                             mem._msg_error_uncaught,
@@ -167,6 +173,7 @@
                             arguments[7]
                         );
                     }
+                    // triggers special event orphan_event for each event triggered with no listener
                     else if (eventName !== mem._orphan_eventName) {
                         mem.trigger(mem, mem._orphan_eventName, subject, eventName, args);
                     }
