@@ -22,8 +22,8 @@
                     args: options && options.args
                 });
 
-                if (isNewListener && eventName !== mem._new_event_tracked_eventName) {
-                    mem.trigger(subject, mem._new_event_tracked_eventName, eventName);
+                if (isNewListener && eventName !== mem._eventName_new_event_tracked) {
+                    mem.trigger(subject, mem._eventName_new_event_tracked, eventName);
                 }
             },
 
@@ -54,7 +54,7 @@
 
                     Object.keys(eventsOffIndex).forEach(function(eventName) {
                         if (!eventsNbrIndex[eventName]) {
-                            mem.trigger(stack.subject, mem._event_untracked_eventName, eventName);
+                            mem.trigger(stack.subject, mem._eventName_event_untracked, eventName);
                         }
                     });
 
@@ -99,10 +99,10 @@
                             callback.action.apply(callback.context || subject, callArgs)
                         );
                     } catch (error) {
-                        if (!(subject === mem && eventName === mem._error_eventName)) {
+                        if (!(subject === mem && eventName === mem._eventName_error)) {
                             mem.trigger(
                                 mem,
-                                mem._error_eventName,
+                                mem._eventName_error,
                                 subject,
                                 eventName,
                                 error,
@@ -149,43 +149,40 @@
                     // remove subject if no more listeners attached
                     if (!stack.callbacks.length) {
                         mem._subjects = mem._subjects.filter(function(stack) {
-                            if (stack.subject === subject) {
-                                return false;
-                            }
-                            return true;
+                            return stack.subject !== subject;
                         });
                     }
 
                     if (!stillHaveCallback) {
-                        mem.trigger(subject, mem._event_untracked_eventName, eventName);
+                        mem.trigger(subject, mem._eventName_event_untracked, eventName);
                     }
                 }
                 else {
                     // no listener on a mem error event: it becomes an error sent to root error handler
-                    if (subject === mem && eventName === mem._error_eventName) {
+                    if (subject === mem && eventName === mem._eventName_error) {
                         mem._fatal(
                             mem._msg_error_uncaught,
-                            arguments[2],
-                            arguments[3],
-                            arguments[4],
-                            arguments[5],
-                            arguments[6],
-                            arguments[7]
+                            args[0], // subject
+                            args[1], // eventName
+                            args[2], // error
+                            args[3], // callback.context
+                            args[4], // callback.action
+                            args[5]  // args
                         );
                     }
                     // triggers special event orphan_event for each event triggered with no listener
-                    else if (eventName !== mem._orphan_eventName) {
-                        mem.trigger(mem, mem._orphan_eventName, subject, eventName, args);
+                    else if (eventName !== mem._eventName_orphan) {
+                        mem.trigger(mem, mem._eventName_orphan, subject, eventName, args);
                     }
                 }
 
                 return results;
             },
 
-            _new_event_tracked_eventName: 'event_tracked',
-            _event_untracked_eventName: 'event_untracked',
-            _orphan_eventName: 'orphan_event',
-            _error_eventName: 'error',
+            _eventName_new_event_tracked: 'event_tracked',
+            _eventName_event_untracked: 'event_untracked',
+            _eventName_orphan: 'orphan_event',
+            _eventName_error: 'error',
             _msg_error_uncaught: 'mem error event uncaught',
             _msg_error_listener_error: 'mem error event listener error',
             _msg_recusions_not_allowed: 'mem event recursion not allowed',
