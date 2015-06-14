@@ -468,6 +468,43 @@
 
                 chai.assert.equal(called, true);
             });
+
+            it('should be possible to get a "event_untracked" event on the subject when removing a listener', function() {
+                var subject = {};
+                function listener1() {}
+                function listener2() {}
+                var listenerUntrack = sinon.spy();
+
+                mem.on(subject, 'event_untracked', listenerUntrack);
+
+                withMemErrorsSync(function() {
+                    mem.on(subject, 'event', listener1);
+                    mem.on(subject, 'event', listener2);
+                    mem.on(subject, 'event1', listener1);
+                    mem.off(subject, 'event', listener1);
+                    mem.off(subject, 'event', listener2);
+                });
+
+                chai.assert.equal(listenerUntrack.callCount, 1);
+                chai.assert.equal(listenerUntrack.calledWith('event'), true);
+            });
+
+            it('should be possible to get a "event_untracked" event on the subject when listener passes iterations limit', function() {
+                var subject = {};
+                function listener1() {}
+                var listenerUntrack = sinon.spy();
+
+                mem.on(subject, 'event_untracked', listenerUntrack);
+
+                withMemErrorsSync(function() {
+                    mem.on(subject, 'event', listener1, { once: true });
+
+                    mem.trigger(subject, 'event');
+                });
+
+                chai.assert.equal(listenerUntrack.callCount, 1);
+                chai.assert.equal(listenerUntrack.calledWith('event'), true);
+            });
         });
     }
 

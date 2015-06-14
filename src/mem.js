@@ -22,18 +22,22 @@
                     args: options && options.args
                 });
 
-                if (isNewListener && eventName !== mem._new_event_tracked_eventName) {
-                    mem.trigger(subject, mem._new_event_tracked_eventName, eventName);
+                if (isNewListener && eventName !== mem._eventName_new_event_tracked) {
+                    mem.trigger(subject, mem._eventName_new_event_tracked, eventName);
                 }
             },
 
             off: function off(subject, eventName, action) {
+                var eventsOffIndex = {};
                 mem._subjects = mem._subjects.filter(function(stack) {
                     if (subject && stack.subject !== subject) {
                         return true;
                     }
 
+                    var eventsNbrIndex = {};
+
                     stack.callbacks = stack.callbacks.filter(function(callback) {
+                        eventsNbrIndex[callback.eventName] = (eventsNbrIndex[callback.eventName] || 0) + 1;
                         if (eventName && callback.eventName !== eventName) {
                             return true;
                         }
@@ -42,7 +46,16 @@
                             return true;
                         }
 
+                        eventsNbrIndex[callback.eventName] -= 1;
+                        eventsOffIndex[callback.eventName] = true;
+
                         return false;
+                    });
+
+                    Object.keys(eventsOffIndex).forEach(function(eventName) {
+                        if (!eventsNbrIndex[eventName]) {
+                            mem.trigger(stack.subject, mem._eventName_event_untracked, eventName);
+                        }
                     });
 
                     return !!stack.callbacks.length;
@@ -55,6 +68,7 @@
                 var stack = mem._forSubject(subject);
                 var results = [];
 
+                // detect recursion loops (listener of an event trying to trigger this same event)
                 if (stack.running && ~stack.running.indexOf(eventName)) {
                     var error = new Error(mem._msg_recusions_not_allowed + ': ' + eventName + ' on ' + subject.toString());
                     error.subject = subject;
@@ -66,6 +80,7 @@
                 stack.running = stack.running || [];
                 stack.running.push(eventName);
 
+                // exec matching listeners
                 stack.callbacks.forEach(function(callback) {
                     if (callback.eventName !== eventName) {
                         return;
@@ -84,10 +99,10 @@
                             callback.action.apply(callback.context || subject, callArgs)
                         );
                     } catch (error) {
-                        if (!(subject === mem && eventName === mem._error_eventName)) {
+                        if (!(subject === mem && eventName === mem._eventName_error)) {
                             mem.trigger(
                                 mem,
-                                mem._error_eventName,
+                                mem._eventName_error,
                                 subject,
                                 eventName,
                                 error,
@@ -109,51 +124,65 @@
                     }
                 });
 
-                stack.callbacks = stack.callbacks.filter(function(callback) {
-                    if (callback.eventName !== eventName) {
-                        return true;
-                    }
-
-                    return callback.iterations !== 0;
-                });
-
+                // clean recursion detector
                 stack.running = stack.running.filter(function(evtName) {
                     return eventName !== evtName;
                 });
 
-                // remove subject if no more listeners attached
-                if (!stack.callbacks.length) {
-                    mem._subjects = mem._subjects.filter(function(stack) {
-                        if (stack.subject === subject) {
-                            return false;
-                        }
-                        return true;
-                    });
-                }
+                if (gotCallback) {
+                    var stillHaveCallback = false;
 
-                if (!gotCallback) {
-                    if (subject === mem && eventName === mem._error_eventName) {
+                    // Remove callbacks with iterations down to 0
+                    stack.callbacks = stack.callbacks.filter(function(callback) {
+                        if (callback.eventName !== eventName) {
+                            return true;
+                        }
+
+                        if (callback.iterations !== 0) {
+                            stillHaveCallback = true;
+                            return true;
+                        }
+
+                        return false;
+                    });
+
+                    // remove subject if no more listeners attached
+                    if (!stack.callbacks.length) {
+                        mem._subjects = mem._subjects.filter(function(stack) {
+                            return stack.subject !== subject;
+                        });
+                    }
+
+                    if (!stillHaveCallback) {
+                        mem.trigger(subject, mem._eventName_event_untracked, eventName);
+                    }
+                }
+                else {
+                    // no listener on a mem error event: it becomes an error sent to root error handler
+                    if (subject === mem && eventName === mem._eventName_error) {
                         mem._fatal(
                             mem._msg_error_uncaught,
-                            arguments[2],
-                            arguments[3],
-                            arguments[4],
-                            arguments[5],
-                            arguments[6],
-                            arguments[7]
+                            args[0], // subject
+                            args[1], // eventName
+                            args[2], // error
+                            args[3], // callback.context
+                            args[4], // callback.action
+                            args[5]  // args
                         );
                     }
-                    else if (eventName !== mem._orphan_eventName) {
-                        mem.trigger(mem, mem._orphan_eventName, subject, eventName, args);
+                    // triggers special event orphan_event for each event triggered with no listener
+                    else if (eventName !== mem._eventName_orphan) {
+                        mem.trigger(mem, mem._eventName_orphan, subject, eventName, args);
                     }
                 }
 
                 return results;
             },
 
-            _new_event_tracked_eventName: 'event_tracked',
-            _orphan_eventName: 'orphan_event',
-            _error_eventName: 'error',
+            _eventName_new_event_tracked: 'event_tracked',
+            _eventName_event_untracked: 'event_untracked',
+            _eventName_orphan: 'orphan_event',
+            _eventName_error: 'error',
             _msg_error_uncaught: 'mem error event uncaught',
             _msg_error_listener_error: 'mem error event listener error',
             _msg_recusions_not_allowed: 'mem event recursion not allowed',
