@@ -15,7 +15,8 @@
   "scripts": {
     "test": "mocha",
     "coverage": "istanbul cover _mocha",
-    "build": "webpack"
+    "build": "webpack",
+    "dev": "webpack --watch"
   },
   "devDependencies": {
     "chai": "^3.5.0",
