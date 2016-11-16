@@ -3,6 +3,11 @@ Minimalist event manager
 
 This module defines a minimalist event manager
 
+Reminder
+--------------
+
+Update the package.json main file when all the packages that require this one will be in CommonJS too
+"main": "mem.min.js" -> "main": "./src/mem.js"
 
 Installation
 --------------
