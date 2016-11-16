@@ -13,6 +13,6 @@ module.exports = {
     loaders: [{
       test: /.*\/src\/.*\.js$/,
       loader: "uglify"
-  }]
+    }]
   }
 };
