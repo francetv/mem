@@ -6,8 +6,7 @@
     "FTVEN"
   ],
   "moduleType": [
-    "amd",
-    "globals"
+    "amd"
   ],
   "keywords": [
     "events"
@@ -16,12 +15,6 @@
   "private": true,
   "homepage": "https://github.com/francetv/mem",
   "main": "mem.min.js",
-  "devDependencies": {
-    "requirejs-bower": "*",
-    "mocha": "*",
-    "chai": "*",
-    "sinonjs": "*"
-  },
   "ignore": [
     "**/.*",
     "node_modules",

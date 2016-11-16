@@ -13,14 +13,12 @@
   },
   "main": "src/mem.js",
   "scripts": {
-    "postinstall": "bower install",
-    "test": "grunt test:dev"
+    "test": "mocha"
   },
   "devDependencies": {
     "bower": "*",
+    "chai": "^3.5.0",
     "ftv-mergeup": "*",
-    "ftv-prerelease": "*",
-    "ftv-release": "*",
     "grunt": "*",
     "grunt-cli": "*",
     "grunt-contrib-clean": "*",
@@ -28,13 +26,8 @@
     "grunt-contrib-requirejs": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-watch": "*",
-    "grunt-mocha-phantomjs": "*",
-    "jscoverage": "*",
-    "jshint": "*",
-    "json2htmlcov": "git://github.com/francetv/json2htmlcov.git",
-    "mocha-phantomjs": "*",
-    "morkdown": "*",
-    "precommit-hook": "*"
+    "mocha": "^3.1.2",
+    "sinon": "^1.17.6"
   },
   "directories": {
     "test": "test"
