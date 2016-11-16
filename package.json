@@ -11,7 +11,7 @@
     "type": "git",
     "url": "https://github.com/francetv/mem.git"
   },
-  "main": "src/mem.js",
+  "main": "mem.min.js",
   "scripts": {
     "test": "mocha",
     "coverage": "istanbul cover _mocha",
