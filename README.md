@@ -6,8 +6,9 @@ This module defines a minimalist event manager
 Reminder
 --------------
 
-Update the package.json main file when all the packages that require this one will be in CommonJS too
-"main": "mem.min.js" -> "main": "./src/mem.js"
+Update the package.json main file when all the packages that require this one will be in CommonJS too. ("main": "mem.min.js" -> "main": "./src/mem.js").
+
+The build command won't be mandatory too after that all libraries requiring this one require it as a commonJS module.
 
 Installation
 --------------
@@ -37,4 +38,3 @@ require(['mem', ...], function (mem, ...) {
     ...
 });
 ```
-

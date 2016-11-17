@@ -1,3 +1,5 @@
+/* global describe it afterEach */
+
 var chai = require('chai');
 var sinon = require('sinon');
 var mem = require('./../src/mem');
