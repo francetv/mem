@@ -1,5 +1,5 @@
 node_modules
-bower_components
+npm-debug.log
 /*.min.js
-cov.html
+coverage
 /mergeUpConf.json
