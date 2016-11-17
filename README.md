@@ -3,10 +3,16 @@ Minimalist event manager
 
 This module defines a minimalist event manager
 
+Reminder
+--------------
+
+Update the package.json main file when all the packages that require this one will be in CommonJS too. ("main": "mem.min.js" -> "main": "./src/mem.js").
+
+The build command won't be mandatory too after that all libraries requiring this one require it as a commonJS module.
 
 Installation
 --------------
-This library has been declined in a bower component so in order to use it just add it to your project's bower.json dependencies :
+This library has been declined in a npm module so in order to use it just add it to your project's package.json dependencies :
 
 ```json
 "dependencies": {
@@ -19,7 +25,7 @@ This library has been declined in a bower component so in order to use it just a
 How to use it
 --------------
 
-This library implements [UMD](http://bob.yexley.net/umd-javascript-that-runs-anywhere/), so you can import it with AMD or browser globals
+This library implements AMD so in order to import it follow this :
 
 ```javascript
 require.config({
@@ -32,10 +38,3 @@ require(['mem', ...], function (mem, ...) {
     ...
 });
 ```
-
-or
-
-```html
-<script type="text/javascript" src="./bower_components/mem/mem.min.js" />
-```
-
