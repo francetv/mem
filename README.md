@@ -3,12 +3,14 @@ Minimalist event manager
 
 This module defines a minimalist event manager
 
-Reminder
---------------
+Mem API is minimalist: on, off and trigger. That's all you need.
 
-Update the package.json main file when all the packages that require this one will be in CommonJS too. ("main": "mem.min.js" -> "main": "./src/mem.js").
+Mem will handle some special events:
+- **error**: mem will catch errors from mem event listeners and trigger an error event on itself. If no listener is attached to mem's error event, this will lead to a native error.
+- **orphan_event**: if mem triggers an event without any listener, a "orphan_event" event will be triggered on mem.
+- **event_tracked**: The first time any listener is attached to an event
+- **event_untracked**: Whenever all listeners are removed from an event
 
-The build command won't be mandatory too after that all libraries requiring this one require it as a commonJS module.
 
 Installation
 --------------
@@ -20,21 +22,4 @@ This library has been declined in a npm module so in order to use it just add it
     "mem": "https://github.com/francetv/mem.git"
     ...
 }
-```
-
-How to use it
---------------
-
-This library implements AMD so in order to import it follow this :
-
-```javascript
-require.config({
-    ...
-    paths: {
-        'mem': './bower_components/mem/mem.min.js'
-    }
-})
-require(['mem', ...], function (mem, ...) {
-    ...
-});
 ```
