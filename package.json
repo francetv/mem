@@ -13,13 +13,20 @@
   },
   "main": "./src/mem.js",
   "scripts": {
+    "pre-commit": "npm run -s lint",
+    "pre-push": "npm run -s test",
+    "lint": "semistandard",
     "test": "mocha",
-    "coverage": "istanbul cover _mocha"
+    "coverage": "istanbul cover _mocha",
+    "test-full": "istanbul cover _mocha -- -R mocha-multi --reporter-options spec=-,xunit=xunit.xml,doc=docs.html; istanbul report cobertura"
   },
   "devDependencies": {
+    "captain-git-hook": "https://github.com/francetv/captain-git-hook.git",
     "chai": "^3.5.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.1.2",
-    "sinon": "^1.17.6"
+    "mocha-multi": "^0.9.1",
+    "sinon": "^1.17.6",
+    "semistandard": "*"
   }
 }
