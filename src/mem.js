@@ -14,7 +14,10 @@ var mem = {
       args: options && options.args
     });
 
-    if (isNewListener && eventName !== mem._eventName_new_event_tracked) {
+    if (isNewListener &&
+      eventName !== mem._eventName_new_event_tracked &&
+      eventName !== mem._eventName_event_untracked &&
+      eventName !== mem._eventName_orphan) {
       mem.trigger(subject, mem._eventName_new_event_tracked, eventName);
     }
   },
@@ -45,7 +48,10 @@ var mem = {
       });
 
       Object.keys(eventsOffIndex).forEach(function (eventName) {
-        if (!eventsNbrIndex[eventName]) {
+        if (!eventsNbrIndex[eventName] &&
+          eventName !== mem._eventName_new_event_tracked &&
+          eventName !== mem._eventName_event_untracked &&
+          eventName !== mem._eventName_orphan) {
           mem.trigger(stack.subject, mem._eventName_event_untracked, eventName);
         }
       });
@@ -160,7 +166,10 @@ var mem = {
           args[4], // callback.action
           args[5] // args
         );
-      } else if (eventName !== mem._eventName_orphan) {
+      } else if (
+        eventName !== mem._eventName_orphan &&
+        eventName !== mem._eventName_new_event_tracked &&
+        eventName !== mem._eventName_event_untracked) {
         // triggers special event orphan_event for each event triggered with no listener
         mem.trigger(mem, mem._eventName_orphan, subject, eventName, args);
       }

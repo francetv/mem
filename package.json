@@ -1,8 +1,8 @@
 {
   "name": "mem",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Minimalist event manager",
-  "author": "FTVEN",
+  "author": "Team Player FTV",
   "keywords": [
     "events"
   ],
@@ -11,20 +11,22 @@
     "type": "git",
     "url": "https://github.com/francetv/mem.git"
   },
-  "main": "mem.min.js",
+  "main": "./src/mem.js",
   "scripts": {
+    "pre-commit": "npm run -s lint",
+    "pre-push": "npm run -s test",
+    "lint": "semistandard",
     "test": "mocha",
     "coverage": "istanbul cover _mocha",
-    "build": "webpack",
-    "dev": "webpack --watch"
+    "test-full": "istanbul cover _mocha -- -R mocha-multi --reporter-options spec=-,xunit=xunit.xml,doc=docs.html; istanbul report cobertura"
   },
   "devDependencies": {
+    "captain-git-hook": "https://github.com/francetv/captain-git-hook.git",
     "chai": "^3.5.0",
-    "ftv-mergeup": "*",
     "istanbul": "^0.4.5",
     "mocha": "^3.1.2",
+    "mocha-multi": "^0.9.1",
     "sinon": "^1.17.6",
-    "uglify-loader": "^1.3.0",
-    "webpack": "^1.13.3"
+    "semistandard": "*"
   }
 }

@@ -393,20 +393,18 @@ describe('mem', function () {
 
   it('should be possible to catch all orphan events on mem', function () {
     var subject = {};
-    var called = false;
+    var spy = sinon.spy();
 
-    mem.on(mem, 'orphan_event', function (sub, eventName, args) {
-      chai.assert.equal(sub, subject, 'sub should be the expected subject');
-      chai.assert.equal(eventName, 'event', 'Callback2 should not be called');
-      chai.assert.deepEqual(args, [], 'event arguments should be an empty array');
-      called = true;
-    });
+    mem.on(mem, 'orphan_event', spy);
 
     withMemErrorsSync(function () {
       mem.trigger(subject, 'event');
     });
 
-    chai.assert.equal(called, true);
+    chai.assert.equal(spy.callCount, 1);
+    chai.assert.equal(spy.firstCall.args[0], subject, 'event subject should be the expected subject');
+    chai.assert.equal(spy.firstCall.args[1], 'event', 'orphan event name should be "event"');
+    chai.assert.deepEqual(spy.firstCall.args[2], [], 'event arguments should be an empty array');
   });
 
   it('should be possible to set iteration number for callbacks', function () {
