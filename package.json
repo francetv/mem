@@ -9,7 +9,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/francetv/mem.git"
+    "url": "https://gitlab.ftven.net/modules-javascript/mem.git"
   },
   "main": "./src/mem.js",
   "scripts": {

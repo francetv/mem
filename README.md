@@ -19,7 +19,7 @@ This library has been declined in a npm module so in order to use it just add it
 ```json
 "dependencies": {
     ...
-    "mem": "https://github.com/francetv/mem.git"
+    "mem": "git+ssh://git@gitlab.ftven.net/modules-javascript/mem.git#2.0.0"
     ...
 }
 ```
